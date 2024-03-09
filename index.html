@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>ChangeColor</title>
+		<style>
+			body, html {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: column;
+			}
+
+			#changeThemeBtn{
+				border-radius: 20px;
+				background-color: #4CAF50;
+				border: 2px solid #ADD8E6;
+				font-weight: bold;
+			}
+
+			#background {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				z-index: -1;
+				background-color: #FFF; 
+			}
+
+			#content {
+				z-index: 1;
+				text-align: center;
+			}
+
+			#circle {
+				position: fixed;
+				top: 0;
+				left: 0;
+				transform: translate(-50%, -50%) scale(0);
+				width: 200vmax;
+				height: 200vmax;
+				border-radius: 50%;
+				background-color: transparent; 
+				z-index: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="background"></div>
+		<div id="content">
+			<p>点击任意位置<button id="changeThemeBtn">切换主题</button></p>
+		</div>
+		<div id="circle"></div>
+		<script>
+			let currentThemeIndex = 0;
+			const themeColors = ['#FFF', '#3498db', '#e74c3c', '#2ecc71', '#000'];
+			let lastColor = '#FFF';
+			let nextColor = '';
+			const changeThemeBtn = document.getElementById('changeThemeBtn');
+			const circle = document.getElementById('circle');
+			const background = document.getElementById('background');
+
+			// 监听整个文档的点击事件
+			document.addEventListener('click', () => {
+				// 计算下一个主题颜色
+				currentThemeIndex = (currentThemeIndex + 1) % themeColors.length;
+				nextColor = themeColors[currentThemeIndex];
+
+				// 触发圆圈扩散动画
+				triggerCircleAnimation(nextColor);
+			});
+
+			function triggerCircleAnimation(color) {
+				// 设置圆圈颜色并触发扩散动画
+				circle.style.backgroundColor = color;
+				circle.style.transition = 'none';
+				circle.offsetHeight; // 触发重排
+				circle.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.2, 0.6, 1)';
+				circle.style.transform = 'translate(-50%, -50%) scale(2)';
+
+				// 动画结束后更新背景颜色
+				setTimeout(() => { updateBackgroundColor(color); }, 300);
+			}
+
+			function updateBackgroundColor(color) {
+				background.style.backgroundColor = color;
+				lastColor = color;
+				// 重置圆圈状态
+				resetCircleState();
+			}
+
+			function resetCircleState() {
+				circle.style.transition = 'none';
+				circle.offsetHeight; // 触发重排
+				circle.style.transform = 'translate(-50%, -50%) scale(0)';
+			}
+		</script>
+	</body>
+</html>
