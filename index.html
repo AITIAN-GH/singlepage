@@ -1,104 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<title>ChangeColor</title>
-		<style>
-			body, html {
-				margin: 0;
-				padding: 0;
-				width: 100%;
-				height: 100%;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				flex-direction: column;
-			}
 
-			#changeThemeBtn{
-				border-radius: 20px;
-				background-color: #4CAF50;
-				border: 2px solid #ADD8E6;
-				font-weight: bold;
-			}
+<head>
+    <meta charset="UTF-8">
+    <title>ChangeColor</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
-			#background {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				z-index: -1;
-				background-color: #FFF; 
-			}
+        #changeThemeBtn {
+            border-radius: 20px;
+            background-color: #FFF;
+            /* Set initial background color */
+            border: 2px solid #000;
+            font-weight: bold;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: color 0.3s, border-color 0.3s, background-color 0.3s;
+        }
 
-			#content {
-				z-index: 1;
-				text-align: center;
-			}
+        #background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #FFF;
+        }
 
-			#circle {
-				position: fixed;
-				top: 0;
-				left: 0;
-				transform: translate(-50%, -50%) scale(0);
-				width: 200vmax;
-				height: 200vmax;
-				border-radius: 50%;
-				background-color: transparent; 
-				z-index: 0;
-			}
-		</style>
-	</head>
-	<body>
-		<div id="background"></div>
-		<div id="content">
-			<p>点击任意位置<button id="changeThemeBtn">切换主题</button></p>
-		</div>
-		<div id="circle"></div>
-		<script>
-			let currentThemeIndex = 0;
-			const themeColors = ['#FFF', '#3498db', '#e74c3c', '#2ecc71', '#000'];
-			let lastColor = '#FFF';
-			let nextColor = '';
-			const changeThemeBtn = document.getElementById('changeThemeBtn');
-			const circle = document.getElementById('circle');
-			const background = document.getElementById('background');
+        #content {
+            z-index: 1;
+            text-align: center;
+        }
 
-			// 监听整个文档的点击事件
-			document.addEventListener('click', () => {
-				// 计算下一个主题颜色
-				currentThemeIndex = (currentThemeIndex + 1) % themeColors.length;
-				nextColor = themeColors[currentThemeIndex];
+        #circle {
+            position: fixed;
+            top: 0;
+            right: 0;
+            transform: translate(50%, -50%) scale(0);
+            width: 200vmax;
+            height: 200vmax;
+            border-radius: 50%;
+            background-color: transparent;
+            z-index: 0;
+        }
+    </style>
+</head>
 
-				// 触发圆圈扩散动画
-				triggerCircleAnimation(nextColor);
-			});
+<body>
+    <div id="background"></div>
+    <div id="content">
+        <p>>_^ => <button id="changeThemeBtn" aria-label="Change Theme">当前主题: rgb(0, 15, 255)</button></p>
+    </div>
+    <div id="circle"></div>
+    <script>
+        let currentThemeIndex = 0;
+        const themeColors = ['#FFF', '#3498db', '#e74c3c', '#2ecc71', '#000'];
+        const changeThemeBtn = document.getElementById('changeThemeBtn');
+        const circle = document.getElementById('circle');
+        const background = document.getElementById('background');
+        let isAnimating = false;
 
-			function triggerCircleAnimation(color) {
-				// 设置圆圈颜色并触发扩散动画
-				circle.style.backgroundColor = color;
-				circle.style.transition = 'none';
-				circle.offsetHeight; // 触发重排
-				circle.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.2, 0.6, 1)';
-				circle.style.transform = 'translate(-50%, -50%) scale(2)';
+        changeThemeBtn.addEventListener('click', () => {
+            if (isAnimating) return;
 
-				// 动画结束后更新背景颜色
-				setTimeout(() => { updateBackgroundColor(color); }, 300);
-			}
+            currentThemeIndex = (currentThemeIndex + 1) % themeColors.length;
+            const nextColor = themeColors[currentThemeIndex];
 
-			function updateBackgroundColor(color) {
-				background.style.backgroundColor = color;
-				lastColor = color;
-				// 重置圆圈状态
-				resetCircleState();
-			}
+            updateButtonText(nextColor); 
+            triggerCircleAnimation(nextColor);
+        });
 
-			function resetCircleState() {
-				circle.style.transition = 'none';
-				circle.offsetHeight; // 触发重排
-				circle.style.transform = 'translate(-50%, -50%) scale(0)';
-			}
-		</script>
-	</body>
+        function triggerCircleAnimation(color) {
+            isAnimating = true;
+            circle.style.backgroundColor = color;
+            circle.style.transition = 'none';
+            circle.offsetHeight;
+            circle.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.2, 0.6, 1)';
+            circle.style.transform = 'translate(50%, -50%) scale(2)';
+
+            setTimeout(() => {
+                updateBackgroundColor(color);
+                isAnimating = false;
+            }, 1200);
+        }
+
+        function updateBackgroundColor(color) {
+            background.style.backgroundColor = color;
+            resetCircleState();
+        }
+
+        function resetCircleState() {
+            circle.style.transition = 'none';
+            circle.offsetHeight;
+            circle.style.transform = 'translate(50%, -50%) scale(0)';
+        }
+
+        function updateButtonText(color) {
+            const rgbColor = hexToRgb(color);
+            changeThemeBtn.textContent = `当前主题: ${rgbColor}`;
+            changeThemeBtn.style.backgroundColor = color;
+            changeThemeBtn.style.backgroundImage = `linear-gradient(${color}, ${color}), linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))`;
+            changeThemeBtn.style.backgroundClip = 'text, padding-box';
+            changeThemeBtn.style.webkitBackgroundClip = 'text, padding-box';
+            changeThemeBtn.style.color = 'transparent';
+
+            if (color === '#FFF') {
+                changeThemeBtn.style.color = '#000';
+                changeThemeBtn.style.borderColor = '#000';
+            } else {
+                changeThemeBtn.style.borderColor = '#FFF';
+            }
+
+            changeThemeBtn.style.borderWidth = '2px';
+        }
+
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+    </script>
+</body>
+
 </html>

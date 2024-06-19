@@ -1,8 +1,8 @@
-# singlepage
+# SinglePage
 
 My first singlepage demo.
 
-You can watch the color change by clicking anywhere on the page.
+You can click to see the theme change.
 
 [try it here](https://aitian-gh.github.io/singlepage)
 
