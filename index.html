@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChangeColor</title>
     <style>
         body,
@@ -15,17 +16,18 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            font-family: Arial, sans-serif;
         }
 
         #changeThemeBtn {
             border-radius: 20px;
             background-color: #FFF;
-            /* Set initial background color */
             border: 2px solid #000;
             font-weight: bold;
             padding: 10px 20px;
             cursor: pointer;
             transition: color 0.3s, border-color 0.3s, background-color 0.3s;
+            font-size: 16px;
         }
 
         #background {
@@ -54,6 +56,14 @@
             background-color: transparent;
             z-index: 0;
         }
+
+        /* 当屏幕宽度小于或等于600px时，应用以下样式 */
+        @media (max-width: 600px) {
+            #changeThemeBtn {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
     </style>
 </head>
 
@@ -71,13 +81,16 @@
         const background = document.getElementById('background');
         let isAnimating = false;
 
+        // 初始化主题
+        updateButtonText(themeColors[currentThemeIndex]);
+
         changeThemeBtn.addEventListener('click', () => {
             if (isAnimating) return;
 
             currentThemeIndex = (currentThemeIndex + 1) % themeColors.length;
             const nextColor = themeColors[currentThemeIndex];
 
-            updateButtonText(nextColor); 
+            updateButtonText(nextColor);
             triggerCircleAnimation(nextColor);
         });
 
@@ -85,9 +98,12 @@
             isAnimating = true;
             circle.style.backgroundColor = color;
             circle.style.transition = 'none';
-            circle.offsetHeight;
+            circle.offsetHeight; // Force reflow
             circle.style.transition = 'transform 1.2s cubic-bezier(0.1, 0.2, 0.6, 1)';
-            circle.style.transform = 'translate(50%, -50%) scale(2)';
+
+            requestAnimationFrame(() => {
+                circle.style.transform = 'translate(50%, -50%) scale(2)';
+            });
 
             setTimeout(() => {
                 updateBackgroundColor(color);
@@ -132,6 +148,28 @@
             const b = bigint & 255;
             return `rgb(${r}, ${g}, ${b})`;
         }
+
+        // 使用 localStorage 保存主题
+        function saveTheme() {
+            localStorage.setItem('themeIndex', currentThemeIndex.toString());
+        }
+
+        // 加载保存的主题
+        function loadTheme() {
+            const savedThemeIndex = localStorage.getItem('themeIndex');
+            if (savedThemeIndex !== null) {
+                currentThemeIndex = parseInt(savedThemeIndex);
+                const savedColor = themeColors[currentThemeIndex];
+                updateButtonText(savedColor);
+                updateBackgroundColor(savedColor);
+            }
+        }
+
+        // 页面加载时加载保存的主题
+        loadTheme();
+
+        // 每次改变主题时保存
+        changeThemeBtn.addEventListener('click', saveTheme);
     </script>
 </body>
 
