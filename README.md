@@ -1,8 +1,3 @@
 # SinglePage
 
-My first singlepage demo.
-
-You can click to see the theme change.
-
-[try it here](https://aitian-gh.github.io/singlepage)
-
+A single-page instance where you can click to see theme changes.
